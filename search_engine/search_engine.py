@@ -1,5 +1,5 @@
 import re
-import json
+
 doc1 = "I can't shoot straight unless I've had a pint!"
 doc2 = "Don't shoot shoot shoot that thing at me."
 doc3 = "I'm your shooter."
@@ -15,13 +15,18 @@ docs = [
 
 
 def search(array, found):
-    res = []
+    word_counts = {}
+
     for doc in array:
         raw_doc = doc['text'].split(' ')
         new_doc = word_processing(raw_doc)
-        if found in new_doc:
-            res.append(doc['id'])
-    return res
+        count = new_doc.count(found)
+        if count > 0:
+            word_counts[doc['id']] = count
+
+    sorted_docs = sort_by_word_count(word_counts)
+
+    return sorted_docs
 
 
 def word_processing(raw_doc):
@@ -31,6 +36,11 @@ def word_processing(raw_doc):
         result = ''.join(token).lower()
         new_doc.append(result)
     return new_doc
+
+
+def sort_by_word_count(word_counts):
+    sorted_docs = [k for k, v in sorted(word_counts.items(), key=lambda item: item[1], reverse=True)]
+    return sorted_docs
 
 
 print(search(docs, 'shoot'))
